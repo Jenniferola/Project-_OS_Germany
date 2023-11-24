@@ -1,0 +1,79 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color: rgb(48, 54, 59);
+  padding: 5px;
+}
+
+h1,h2,h3,h4,h5,h6,p,li,ul {
+  font-family: Rockwell;
+  -webkit-text-stroke: 0.1px slateblue; /* width and color */
+  color: whitesmoke;
+}
+
+#main {
+  background-color: rgb(88, 88, 88);
+}
+
+.test-row-fill {
+  width: 100%;
+  background-color: rgb(85, 85, 85);
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-size: 25px;
+}
+.test-row-fill:hover {
+
+  background-color: rgb(75, 75, 75);
+
+}
+
+#test-row-id {
+  display: block;
+}
+
+.test-row-fill h2 {
+  text-align: center;
+}
+
+.rower {
+  display: flex;
+  text-align: center;
+}
+
+.rower h2 {
+  padding-top: 20px;
+  padding-bottom: 25px;
+  font-size: 30px;
+}
+
+.graph-box {
+  width: 50%;
+  background-color: rgb(105, 105, 105);
+  padding: 10px;
+  padding-bottom: 50px;
+}
+
+#info-box {
+  background-color: rgb(105, 105, 105);
+  display: inline-block;
+  width: 100%;
+  padding-top: 5px;
+  text-align: left;
+}
+
+#info-box h3, #info-box ul {
+  padding-left: 10%;
+  padding-top: 10px;
+  font-size: 30px;
+  padding-bottom: 50px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background-color: rgb(105, 105, 105);
+  padding-bottom: 10px;
+  font-size: 25px;
+}
