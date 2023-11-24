@@ -14,36 +14,48 @@ punkt4 = "4. Framgångsfaktorer för OS vinnare (alla länder): "
 def question_title(title):
     return dbc.Row([html.H2(f"{title}")], class_name="test-row-fill")
 
-# Datacleaning
-# Loading in the os data
+# Load the data
 os_data = pd.read_csv('data/athlete_events.csv')
 
-os_data_germany = os_data.query("NOC == 'GER' or NOC == 'FRG' or NOC == 'SAA' or NOC == 'GDR'") #Filtrerar ut tysklands alla NOC genom tiderna
+# Filter for German athletes
+os_data_germany = os_data.query("NOC == 'GER' or NOC == 'FRG' or NOC == 'SAA' or NOC == 'GDR'")
 
-data_medals = os_data_germany.dropna() #Droppar alla nan-värden i datasetet
+# Filter out rows without medal information
+data_medals_germany = os_data_germany.dropna(subset=['Medal'])
 
-sport_data_medals = data_medals["Sport"].value_counts().head(10) #.head(10) för top 10
-df_data_medals = pd.DataFrame(sport_data_medals)
+# For team events, count the event as a single medal instance
+# Here, we drop duplicates considering 'Year', 'Event', and 'Medal' for unique medals per sport
+unique_medals_per_sport = data_medals_germany.drop_duplicates(subset=['Year', 'Event', 'Medal'])
 
-#Medals per year data
-medals_per_year = data_medals.groupby("Year").size().reset_index(name="Medals")
-medals_per_year_sorted = medals_per_year.sort_values("Medals",ascending=False)
-#Avrage age data germany
+# For aggregating medals per year, do not include 'Name' in duplicates removal
+unique_medals_per_year = data_medals_germany.drop_duplicates(subset=['Year', 'Event', 'Medal'])
 
+# For counting individual athlete medals, include 'Name' in duplicates removal
+unique_medals_per_athlete = data_medals_germany.drop_duplicates(subset=['Year', 'Event', 'Medal', 'Name'])
+
+# Count medals in top 10 sports using the unique_medals_per_sport DataFrame
+sport_data_medals = unique_medals_per_sport["Sport"].value_counts().head(10)
+df_data_medals = pd.DataFrame(sport_data_medals).reset_index()
+df_data_medals.columns = ['Sport', 'count']
+
+# Medals per year data, considering unique medals only
+medals_per_year = unique_medals_per_year.groupby("Year")['Medal'].count().reset_index(name="Medals")
+medals_per_year_sorted = medals_per_year.sort_values("Medals", ascending=False)
+
+# Average age data germany
 # Filter out rows without age data
 germany_age_data = os_data_germany.dropna(subset=['Age'])
 
 # Calculate average age per year
 avg_age_per_year = germany_age_data.groupby('Year')['Age'].mean().reset_index()
 
-# Count medals for each athlete
-medal_counts_athlete = data_medals['Name'].value_counts().head(10)
+# Count medals for each athlete, considering unique medals only
+medal_counts_athlete = unique_medals_per_athlete['Name'].value_counts().head(10)
 
+# Filtering sport-specific datasets (with medals)
 os_data_modified = os_data[os_data['Medal'].notna()]
 
-# Plott för Athletics (medaljfördelning):
-# Filtrera sport-specifika dataset
-os_data_athletics = os_data_modified.query("Sport == 'Athletics'") #Without people that havent won Medals for all 4 os_data_(sportname)
+os_data_athletics = os_data_modified.query("Sport == 'Athletics'")
 os_data_canoeing = os_data_modified.query("Sport == 'Canoeing'")
 os_data_tug_of_war = os_data_modified.query("Sport == 'Tug-Of-War'")
 os_data_rhythmic_gymnastic = os_data_modified.query("Sport == 'Rhythmic Gymnastics'")
@@ -84,8 +96,8 @@ avrage_metrics = pd.DataFrame({
 
 #Skapade figurer:
 #Row 1
-#Figure one - The sports where germany performs the best
-top_10_ger_sport_fig = px.bar(df_data_medals, y="count", 
+# Figure one - The sports where Germany performs the best
+top_10_ger_sport_fig = px.bar(df_data_medals, x='Sport', y="count", 
              template='plotly_white',
              labels={"Sport": "Olympic Sport", "count": "Number of Medals"},
              color="count")
